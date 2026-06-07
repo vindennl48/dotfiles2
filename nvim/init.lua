@@ -29,7 +29,7 @@ Plug 'junegunn/fzf.vim' -- fuzzy finder
   Plug 'junegunn/fzf' -- dependency
 Plug 'scrooloose/nerdtree' -- filetree
 Plug 'scrooloose/nerdcommenter' -- easy commenting
-Plug 'phaazon/hop.nvim' -- quick jump to another char
+Plug 'smoka7/hop.nvim' -- quick jump to another char
 Plug 'kwkarlwang/bufresize.nvim' -- keep vim buffers the same sz during term resize
 Plug 'jakemason/ouroboros' -- switch between h and c/cpp file pairs
   Plug 'nvim-lua/plenary.nvim' -- dependency of ouroboros

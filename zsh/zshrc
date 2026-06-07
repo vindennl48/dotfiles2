@@ -191,7 +191,6 @@ gac() {
 ## EXPORTS ##
 ################################################################################
 export VISUAL="nvim" # default visual 
-export GEMINI_API_KEY="AIzaSyCJP_9C-0a-uQtzuFFQ718biLoAcEr3l58"
 ################################################################################
 
 ## POWER10K ##
