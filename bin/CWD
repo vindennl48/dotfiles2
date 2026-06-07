@@ -1,0 +1,130 @@
+#!/usr/bin/env python3
+
+# used for keeping track of current working directories
+# can store multiple and switch between them
+# can also store from vim and open in another terminal
+
+
+import os, sys, argparse, editor
+from Files import Files, Settings
+from simple_term_menu import TerminalMenu
+
+
+## Global Variables ############################################################
+settingsDir  = Files.newPath("~/.config/CWD/")
+settingsPath = settingsDir / "settings.json"
+################################################################################
+
+
+## Helpful Functions ###########################################################
+def reIterList(x):
+    x.sort()
+    for i, item in enumerate(x):
+        item[0] = i
+
+def getNextIter(x):
+    max = 0
+    for item in x:
+        if item[0] > max:
+            max = item[0]
+    return max + 1
+################################################################################
+
+
+## Main Program ################################################################
+if __name__ == "__main__":
+    settings = Settings(
+        settingsPath,
+        {
+            "paths": []
+        }
+    )
+    reIterList(settings.json["paths"])
+
+
+    ## Get cmd arguments #######################################################
+    parser = argparse.ArgumentParser()
+    parser.add_argument( "-a", "--add", help = "Add a directory to the list" )
+    parser.add_argument( "-d", "--dump", action = "store_true", help = "Get a list of all directories" )
+    args = parser.parse_args()
+    ############################################################################
+
+
+    ## Adding cmd to json ######################################################
+    if args.add:
+        newPath = Files.newPath(args.add).absolute()
+        settings.json["paths"].append([
+            getNextIter(settings.json["paths"]),
+            str(newPath)
+        ])
+        settings.save()
+        exit()
+    ############################################################################
+
+
+    ## Dumping the saved directories ###########################################
+    if args.dump:
+        result = "\n".join([ x[1] for x in settings.json["paths"] ]) + "\n"
+        sys.stdout.write(result)
+        exit()
+    ############################################################################
+
+
+    ## Set current directory ###################################################
+    SEPARATOR = "─" * 20
+    menu_items = ["=> Edit List"]
+    for p in settings.json["paths"]:
+        path_str = p[1].strip()
+        if not path_str:
+            menu_items.append(SEPARATOR)
+        else:
+            menu_items.append(p[1])
+
+    mainMenu = TerminalMenu(
+        menu_entries         = menu_items,
+        title                = f'List of Working Directories',
+        menu_cursor          = "> ",
+        menu_cursor_style    = ("fg_red", "bold"),
+        menu_highlight_style = ("fg_red", "bold"),
+        cycle_cursor         = True,
+        clear_screen         = True
+    )
+    menuAnswer = mainMenu.show()
+
+    if menuAnswer is None:
+        exit()
+
+    selected_item = menu_items[menuAnswer]
+
+    # Handle menu actions
+    if menuAnswer == 0: # Edit List
+        # For editing, use the original list to preserve empty lines
+        all_paths = [p[1] for p in settings.json["paths"]]
+        result = "\n".join(all_paths)
+        result = editor.edit(contents = result)
+
+        if result is None:
+            exit()
+
+        result = result.decode()
+
+        if result and result[-1] == "\n":
+            result = result[:-1]
+        result = result.split("\n")
+
+        changedList = []
+        for i, entry in enumerate(result):
+            changedList.append([i, entry])
+
+        settings.json["paths"] = changedList
+        settings.save()
+
+    elif selected_item == SEPARATOR or selected_item.strip().startswith("#"):
+        # Exit if a separator or comment is selected
+        exit()
+    else:
+        # Change directory to the selected path
+        path_to_cd = Files.newPath(selected_item).absolute()
+        output = f'cd "{path_to_cd}"'
+        sys.stdout.write(output)
+    ############################################################################

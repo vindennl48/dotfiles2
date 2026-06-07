@@ -1,0 +1,21 @@
+{
+  "languageserver": {
+    "clangd": {
+      "command": "/opt/homebrew/opt/llvm/bin/clangd",
+      "args": [
+        "--background-index",
+        "--completion-style=detailed"
+      ],
+      "disableDiagnostics": true,
+      "filetypes": ["c", "cc", "cpp", "c++", "objc", "objcpp", "arduino"],
+      "rootPatterns": ["compile_commands.json", "compile_flags.txt", ".git/", ".hg/"]
+    }
+  },
+  "semanticTokens.enable": true,
+  "sumneko-lua.enableNvimLuaDev": true,
+  "inlayHint.enable": false,
+  "Lua.hint.enable": false,
+  "pyright.inlayHints.functionReturnTypes": false,
+  "pyright.inlayHints.variableTypes": false,
+  "pyright.inlayHints.parameterTypes": false
+}
